@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useHistory } from 'react-router-dom'
 import React, { useState } from 'react'
 import { Container, Layout, FlexExpander, ButtonVariation, Button, Checkbox } from '@harnessio/uicore'
 import { useStrings } from 'framework/strings'
