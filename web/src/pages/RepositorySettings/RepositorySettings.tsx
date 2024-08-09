@@ -32,6 +32,7 @@ import BranchProtectionListing from 'components/BranchProtection/BranchProtectio
 import { SettingsTab, normalizeGitRef } from 'utils/GitUtils'
 import SecurityScanSettings from 'pages/RepositorySettings/SecurityScanSettings/SecurityScanSettings'
 import GeneralSettingsContent from './GeneralSettingsContent/GeneralSettingsContent'
+import LabelsListing from 'pages/Labels/LabelsListing'
 import css from './RepositorySettings.module.scss'
 
 export default function RepositorySettings() {
@@ -71,6 +72,11 @@ export default function RepositorySettings() {
       id: SettingsTab.security,
       title: getString('security'),
       panel: <SecurityScanSettings repoMetadata={repoMetadata} activeTab={activeTab} />
+    },
+    {
+      id: SettingsTab.labels,
+      title: getString('labels.labels'),
+      panel: <LabelsListing repoMetadata={repoMetadata} activeTab={activeTab} />
     }
     // {
     //   id: SettingsTab.webhooks,

@@ -38,7 +38,8 @@ import type {
   TypesPullReqStats,
   TypesCodeOwnerEvaluation,
   TypesPullReqReviewer,
-  TypesListCommitResponse
+  TypesListCommitResponse,
+  TypesScopesLabels
 } from 'services/code'
 import { CommentAction, CommentBox, CommentBoxOutletPosition, CommentItem } from 'components/CommentBox/CommentBox'
 import { useConfirmAct } from 'hooks/useConfirmAction'
@@ -102,6 +103,11 @@ export const Conversation: React.FC<ConversationProps> = ({
     loading: loadingReviewers
   } = useGet<TypesPullReqReviewer[]>({
     path: `/api/v1/repos/${repoMetadata.path}/+/pullreq/${pullReqMetadata.number}/reviewers`,
+    debounce: 500
+  })
+
+  const { data: labels, refetch: refetchLabels } = useGet<TypesScopesLabels>({
+    path: `/api/v1/repos/${repoMetadata.path}/+/pullreq/${pullReqMetadata.number}/labels`,
     debounce: 500
   })
 
@@ -493,6 +499,8 @@ export const Conversation: React.FC<ConversationProps> = ({
                 repoMetadata={repoMetadata}
                 pullRequestMetadata={pullReqMetadata}
                 refetchReviewers={refetchReviewers}
+                labels={labels}
+                refetchLabels={refetchLabels}
               />
             </Layout.Horizontal>
           </Container>

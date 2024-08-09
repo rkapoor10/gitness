@@ -70,7 +70,7 @@ export interface CODERoutes extends CDERoutes {
   toCODEHome: () => string
 
   toCODESpaceAccessControl: (args: Required<Pick<CODEProps, 'space'>>) => string
-  toCODESpaceSettings: (args: Required<Pick<CODEProps, 'space'>>) => string
+  toCODESpaceSettings: (args: RequiredField<Pick<CODEProps, 'space' | 'settingSection'>, 'space'>) => string
   toCODEPipelines: (args: Required<Pick<CODEProps, 'repoPath'>>) => string
   toCODEPipelineEdit: (args: Required<Pick<CODEProps, 'repoPath' | 'pipeline'>>) => string
   toCODEPipelineSettings: (args: Required<Pick<CODEProps, 'repoPath' | 'pipeline'>>) => string
@@ -126,7 +126,8 @@ export const routes: CODERoutes = {
   toCODEHome: () => `/`,
 
   toCODESpaceAccessControl: ({ space }) => `/access-control/${space}`,
-  toCODESpaceSettings: ({ space }) => `/settings/${space}`,
+  toCODESpaceSettings: ({ space, settingSection }) =>
+    `/settings/${space}/project${settingSection ? '/' + settingSection : ''}`,
   toCODEPipelines: ({ repoPath }) => `/${repoPath}/pipelines`,
   toCODEPipelineEdit: ({ repoPath, pipeline }) => `/${repoPath}/pipelines/${pipeline}/edit`,
   toCODEPipelineSettings: ({ repoPath, pipeline }) => `/${repoPath}/pipelines/${pipeline}/triggers`,

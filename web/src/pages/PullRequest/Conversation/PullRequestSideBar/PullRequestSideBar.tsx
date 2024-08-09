@@ -16,7 +16,7 @@
 
 import React from 'react'
 import { PopoverInteractionKind } from '@blueprintjs/core'
-import { useMutate } from 'restful-react'
+import { useGet, useMutate } from 'restful-react'
 import { omit } from 'lodash-es'
 import cx from 'classnames'
 import { Container, Layout, Text, Avatar, FlexExpander, useToaster, Utils } from '@harnessio/uicore'
@@ -24,28 +24,28 @@ import { Icon, IconName } from '@harnessio/icons'
 import { Color, FontVariation } from '@harnessio/design-system'
 import { OptionsMenuButton } from 'components/OptionsMenuButton/OptionsMenuButton'
 import { useStrings } from 'framework/strings'
-import type { TypesPullReq, RepoRepositoryOutput, EnumPullReqReviewDecision } from 'services/code'
-import { getErrorMessage } from 'utils/Utils'
+import type { TypesPullReq, RepoRepositoryOutput, EnumPullReqReviewDecision, TypesScopesLabels } from 'services/code'
+import { ColorName, getErrorMessage } from 'utils/Utils'
 import { ReviewerSelect } from 'components/ReviewerSelect/ReviewerSelect'
 import { PullReqReviewDecision, processReviewDecision } from 'pages/PullRequest/PullRequestUtils'
 import ignoreFailed from '../../../../icons/ignoreFailed.svg?url'
+import { LabelSelector } from 'components/Label/LabelSelector/LabelSelector'
+import { Label } from 'components/Label/Label'
 import css from './PullRequestSideBar.module.scss'
 
 interface PullRequestSideBarProps {
   reviewers?: Unknown
+  labels: TypesScopesLabels | null
   repoMetadata: RepoRepositoryOutput
   pullRequestMetadata: TypesPullReq
   refetchReviewers: () => void
+  refetchLabels: () => void
 }
 
 const PullRequestSideBar = (props: PullRequestSideBarProps) => {
-  const { reviewers, repoMetadata, pullRequestMetadata, refetchReviewers } = props
-  // const [searchTerm, setSearchTerm] = useState('')
-  // const [page] = usePageIndex(1)
+  const { reviewers, repoMetadata, pullRequestMetadata, refetchReviewers, labels, refetchLabels } = props
   const { getString } = useStrings()
-  // const tagArr = []
-  const { showError } = useToaster()
-
+  const { showError, showSuccess } = useToaster()
   const generateReviewDecisionInfo = (
     reviewDecision: EnumPullReqReviewDecision | PullReqReviewDecision.outdated
   ): {
@@ -159,6 +159,21 @@ const PullRequestSideBar = (props: PullRequestSideBarProps) => {
     verb: 'DELETE',
     path: ({ id }) => `/api/v1/repos/${repoMetadata.path}/+/pullreq/${pullRequestMetadata?.number}/reviewers/${id}`
   })
+
+  const { mutate: removeLabel } = useMutate({
+    verb: 'DELETE',
+    path: ({ label_id }) =>
+      `/api/v1/repos/${repoMetadata.path}/+/pullreq/${pullRequestMetadata?.number}/labels/${encodeURIComponent(
+        label_id
+      )}`
+  })
+
+  const { data: labelsList, refetch: refetchlabelsList } = useGet<TypesScopesLabels>({
+    path: `/api/v1/repos/${repoMetadata.path}/+/pullreq/${pullRequestMetadata?.number}/labels`,
+    queryParams: { assignable: true },
+    debounce: 500
+  })
+
   // const [isOptionsOpen, setOptionsOpen] = React.useState(false)
   // const [val, setVal] = useState<SelectOption>()
   //TODO: add actions when you click the options menu button and also api integration when there's optional and required reviwers
@@ -375,6 +390,59 @@ const PullRequestSideBar = (props: PullRequestSideBarProps) => {
               {getString('noneYet')}
             </Text>
           )} */}
+        </Layout.Vertical>
+
+        <Layout.Vertical>
+          <Layout.Horizontal>
+            <Text style={{ lineHeight: '24px' }} font={{ variation: FontVariation.H6 }}>
+              {getString('labels.labels')}
+            </Text>
+            <FlexExpander />
+
+            <LabelSelector
+              pullRequestMetadata={pullRequestMetadata}
+              allLabelsData={labelsList}
+              refetchLabels={refetchLabels}
+              refetchlabelsList={refetchlabelsList}
+              repoMetadata={repoMetadata}
+            />
+          </Layout.Horizontal>
+          <Container padding={{ top: 'medium', bottom: 'large' }}>
+            <Layout.Horizontal className={css.labelsLayout}>
+              {labels && labels.label_data?.length !== 0 ? (
+                labels?.label_data?.map(label => (
+                  <Label
+                    name={label.key as string}
+                    label_color={label.color as ColorName}
+                    label_value={{
+                      name: label.assigned_value?.value as string,
+                      color: label.assigned_value?.color as ColorName
+                    }}
+                    scope={label.scope}
+                    removeLabelBtn={true}
+                    handleRemoveClick={() => {
+                      removeLabel({}, { pathParams: { label_id: label.id } })
+                        .then(() => {
+                          label.assigned_value?.value
+                            ? showSuccess(
+                                `${getString('labels.removedLabel')} ${label.key} : ${label.assigned_value?.value} `
+                              )
+                            : showSuccess(`${getString('labels.removedLabel')} ${label.key} `)
+                        })
+                        .catch(err => {
+                          showError(getErrorMessage(err))
+                        })
+                      refetchLabels()
+                    }}
+                  />
+                ))
+              ) : (
+                <Text color={Color.GREY_300} font={{ variation: FontVariation.BODY2_SEMI, size: 'small' }}>
+                  {getString('labels.noLabels')}
+                </Text>
+              )}
+            </Layout.Horizontal>
+          </Container>
         </Layout.Vertical>
       </Container>
     </Container>

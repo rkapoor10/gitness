@@ -615,6 +615,38 @@ export interface StringsMap {
   'keywordSearch.sampleQueries.searchForPattern': string
   keywordSearchPlaceholder: string
   killed: string
+  'labels.addNewValue': string
+  'labels.addValue': string
+  'labels.allowDynamic': string
+  'labels.appliedLabel': string
+  'labels.canbeAddedByUsers': string
+  'labels.createLabel': string
+  'labels.createdIn': string
+  'labels.deleteLabel': string
+  'labels.label': string
+  'labels.labelCreated': string
+  'labels.labelCreationFailed': string
+  'labels.labelName': string
+  'labels.labelNameReq': string
+  'labels.labelNotFound': string
+  'labels.labelTo': string
+  'labels.labelUpdateFailed': string
+  'labels.labelValue': string
+  'labels.labelValueReq': string
+  'labels.labels': string
+  'labels.labelsApplied': string
+  'labels.newLabel': string
+  'labels.noLabels': string
+  'labels.noRepoLabelsFound': string
+  'labels.noScopeLabelsFound': string
+  'labels.provideLabelName': string
+  'labels.removeLabel': string
+  'labels.removed': string
+  'labels.removedLabel': string
+  'labels.scopeMessage': string
+  'labels.showLabelsScope': string
+  'labels.udpated': string
+  'labels.updateLabel': string
   language: string
   leaveAComment: string
   license: string

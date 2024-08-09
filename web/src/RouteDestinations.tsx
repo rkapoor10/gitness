@@ -81,7 +81,12 @@ export const RouteDestinations: React.FC = React.memo(function RouteDestinations
           </LayoutWithSideNav>
         </Route>
 
-        <Route path={routes.toCODESpaceSettings({ space: pathProps.space })} exact>
+        <Route
+          path={[
+            routes.toCODESpaceSettings({ space: pathProps.space, settingSection: pathProps.settingSection }),
+            routes.toCODESpaceSettings({ space: pathProps.space })
+          ]}
+          exact>
           <LayoutWithSideNav title={getString('pageTitle.spaceSettings')}>
             <SpaceSettings />
           </LayoutWithSideNav>

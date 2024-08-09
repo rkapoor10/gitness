@@ -28,12 +28,12 @@ import { useAppContext } from 'AppContext'
 import { useGetRepositoryMetadata } from 'hooks/useGetRepositoryMetadata'
 import { useStrings } from 'framework/strings'
 import { RepositoryPageHeader } from 'components/RepositoryPageHeader/RepositoryPageHeader'
-import { voidFn, getErrorMessage, LIST_FETCHING_LIMIT, permissionProps, PageBrowserProps } from 'utils/Utils'
+import { voidFn, getErrorMessage, LIST_FETCHING_LIMIT, permissionProps, PageBrowserProps, ColorName } from 'utils/Utils'
 import { usePageIndex } from 'hooks/usePageIndex'
 import { useGetSpaceParam } from 'hooks/useGetSpaceParam'
 import { useUpdateQueryParams } from 'hooks/useUpdateQueryParams'
 import { useQueryParams } from 'hooks/useQueryParams'
-import type { TypesPullReq, RepoRepositoryOutput } from 'services/code'
+import type { TypesPullReq, RepoRepositoryOutput, TypesLabel, TypesLabelValue } from 'services/code'
 import { ResourceListingPagination } from 'components/ResourceListingPagination/ResourceListingPagination'
 import { NoResultCard } from 'components/NoResultCard/NoResultCard'
 import { PipeSeparator } from 'components/PipeSeparator/PipeSeparator'
@@ -43,6 +43,7 @@ import { LoadingSpinner } from 'components/LoadingSpinner/LoadingSpinner'
 import useSpaceSSE from 'hooks/useSpaceSSE'
 import { TimePopoverWithLocal } from 'utils/timePopoverLocal/TimePopoverWithLocal'
 import { PullRequestsContentHeader } from './PullRequestsContentHeader/PullRequestsContentHeader'
+import { Label } from 'components/Label/Label'
 import css from './PullRequests.module.scss'
 
 const SSE_EVENTS = ['pullreq_updated']
@@ -55,6 +56,15 @@ export default function PullRequests() {
   const browserParams = useQueryParams<PageBrowserProps>()
   const [filter, setFilter] = useState(browserParams?.state || (PullRequestFilterOption.OPEN as string))
   const [authorFilter, setAuthorFilter] = useState<string>()
+  const [labelFilter, setLabelFilter] = useState<
+    {
+      labelId: number
+      valueId: number | undefined
+      type: 'label' | 'value'
+      labelObj: TypesLabel
+      valueObj: TypesLabelValue | undefined
+    }[]
+  >([])
   const space = useGetSpaceParam()
   const { updateQueryParams, replaceQueryParams } = useUpdateQueryParams()
   const pageInit = browserParams.page ? parseInt(browserParams.page) : 1
@@ -89,7 +99,17 @@ export default function PullRequests() {
       order: 'desc',
       query: searchTerm,
       state: browserParams.state ? browserParams.state : filter == PullRequestFilterOption.ALL ? '' : filter,
-      ...(authorFilter && { created_by: Number(authorFilter) })
+      ...(authorFilter && { created_by: Number(authorFilter) }),
+
+      ...(labelFilter.filter(({ type }) => type === 'label').length && {
+        label_id: labelFilter.filter(({ type }) => type === 'label').map(({ labelId }) => labelId)
+      }),
+      ...(labelFilter.filter(({ type }) => type === 'value').length && {
+        value_id: labelFilter.filter(({ type }) => type === 'value').map(({ valueId }) => valueId)
+      })
+    },
+    queryParamStringifyOptions: {
+      arrayFormat: 'repeat'
     },
     debounce: 500,
     lazy: !repoMetadata
@@ -141,23 +161,39 @@ export default function PullRequests() {
               <Layout.Horizontal className={css.titleRow} spacing="medium">
                 <PullRequestStateLabel iconSize={22} data={row.original} iconOnly />
                 <Container padding={{ left: 'small' }}>
-                  <Layout.Vertical spacing="xsmall">
+                  <Layout.Vertical spacing="small">
                     <Container>
-                      <Layout.Horizontal>
-                        <Text color={Color.GREY_800} className={css.title} lineClamp={1}>
-                          {row.original.title}
-                        </Text>
-                        <Container className={css.convo}>
-                          <Icon
-                            className={css.convoIcon}
-                            padding={{ left: 'medium', right: 'xsmall' }}
-                            name="code-chat"
-                            size={15}
-                          />
-                          <Text font={{ variation: FontVariation.SMALL }} color={Color.GREY_500} tag="span">
-                            {row.original.stats?.conversations}
+                      <Layout.Horizontal flex={{ alignItems: 'center' }} className={css.prLabels}>
+                        <Layout.Horizontal spacing={'xsmall'}>
+                          <Text color={Color.GREY_800} className={css.title} lineClamp={1}>
+                            {row.original.title}
                           </Text>
-                        </Container>
+
+                          <Container className={css.convo}>
+                            <Icon
+                              className={css.convoIcon}
+                              padding={{ left: 'small', right: 'small' }}
+                              name="code-chat"
+                              size={15}
+                            />
+                            <Text font={{ variation: FontVariation.SMALL }} color={Color.GREY_500} tag="span">
+                              {row.original.stats?.conversations}
+                            </Text>
+                          </Container>
+                        </Layout.Horizontal>
+                        <Render
+                          when={row.original && row.original.labels && row.original.labels.length !== 0 && !prLoading}>
+                          {row.original?.labels?.map(label => (
+                            <Label
+                              name={label.key as string}
+                              label_color={label.color as ColorName}
+                              label_value={{
+                                name: label.value as string,
+                                color: label.value_color as ColorName
+                              }}
+                            />
+                          ))}
+                        </Render>
                       </Layout.Horizontal>
                     </Container>
                     <Container>
@@ -256,12 +292,69 @@ export default function PullRequests() {
                 setPage(1)
               }}
               activePullRequestAuthorFilterOption={authorFilter}
+              activePullRequestLabelFilterOption={labelFilter}
               onPullRequestAuthorFilterChanged={_authorFilter => {
                 setAuthorFilter(_authorFilter)
                 setPage(1)
               }}
+              onPullRequestLabelFilterChanged={_labelFilter => {
+                setLabelFilter(_labelFilter)
+                setPage(1)
+              }}
             />
             <Container padding="xlarge">
+              <Container padding={{ top: 'medium', bottom: 'large' }}>
+                {labelFilter && labelFilter?.length !== 0 ? (
+                  <Layout.Horizontal
+                    flex={{ alignItems: 'center', justifyContent: 'flex-start' }}
+                    style={{ flexWrap: 'wrap', gap: '5px' }}>
+                    <Text color={Color.GREY_400}>Showing {data?.length} results for</Text>
+
+                    {labelFilter?.map(label => (
+                      <Label
+                        name={label.labelObj.key as string}
+                        label_color={label.labelObj.color as ColorName}
+                        label_value={{
+                          name: label.valueObj?.value as string,
+                          color: label.valueObj?.color as ColorName
+                        }}
+                        removeLabelBtn={true}
+                        handleRemoveClick={() => {
+                          if (label.type === 'value') {
+                            const updateFilterObjArr = labelFilter.filter(filterObj => {
+                              if (!(filterObj.labelId === label.labelId && filterObj.type === 'value')) {
+                                return filterObj
+                              }
+                            })
+                            setLabelFilter(updateFilterObjArr)
+                            setPage(1)
+                          } else if (label.type === 'label') {
+                            const updateFilterObjArr = labelFilter.filter(filterObj => {
+                              if (!(filterObj.labelId === label.labelId && filterObj.type === 'label')) {
+                                return filterObj
+                              }
+                            })
+                            setLabelFilter(updateFilterObjArr)
+                            setPage(1)
+                          }
+                        }}
+                        disableRemoveBtnTooltip={true}
+                      />
+                    ))}
+                  </Layout.Horizontal>
+                ) : (
+                  <Layout.Horizontal
+                    flex={{ alignItems: 'center', justifyContent: 'flex-start' }}
+                    style={{ flexWrap: 'wrap', gap: '5px' }}>
+                    <Text color={Color.GREY_400} font={{ variation: FontVariation.H6 }}>
+                      {data?.length} <span>{getString('pullRequests')}</span>
+                    </Text>
+                    <Text color={Color.GREY_400} font={{ italic: true }}>
+                      {getString('labels.scopeMessage')}
+                    </Text>
+                  </Layout.Horizontal>
+                )}
+              </Container>
               <Match expr={data?.length}>
                 <Truthy>
                   <>

@@ -1292,3 +1292,36 @@ regex:
   enabled: enabled
   disabled: disabled
   string: RegEx
+labels:
+  labels: Labels
+  newLabel: New Label
+  labelName: Label Name
+  labelValue: Label Value
+  labelNotFound: label not found
+  allowDynamic: Allow users to add values
+  addNewValue: 'Add new value  '
+  addValue: 'Add value'
+  removeLabel: Remove Label
+  deleteLabel: Delete Label
+  provideLabelName: Provide Label name
+  labelCreated: Label created
+  labelNameReq: Label Name is required
+  labelValueReq: Label Value is required
+  noLabels: No Labels
+  udpated: 'updated '
+  label: ' label'
+  labelTo: ' label to '
+  removed: 'removed '
+  canbeAddedByUsers: '*can be added by users*'
+  removedLabel: Removed Label
+  showLabelsScope: Show labels from parent scopes
+  createLabel: Create Label
+  updateLabel: Update Label
+  appliedLabel: Create a <strong>new branch</strong> for this commit and start a pull request
+  labelsApplied: Labels applied
+  createdIn: Created In
+  labelCreationFailed: Failed to create label
+  labelUpdateFailed: Failed to update label
+  noRepoLabelsFound: There are no Labels in your repo. Click the button below to create a Label.
+  noScopeLabelsFound: There are no Labels present in current scope. Click the button below to create a Label.
+  scopeMessage: (Showing labels created at current scope or higher)
