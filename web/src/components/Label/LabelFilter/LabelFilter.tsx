@@ -30,11 +30,12 @@ import cx from 'classnames'
 import { Icon } from '@harnessio/icons'
 import { Color, FontVariation } from '@harnessio/design-system'
 import { Menu, MenuItem, PopoverInteractionKind, PopoverPosition, Spinner } from '@blueprintjs/core'
+import { noop } from 'lodash-es'
 import { getConfig, getUsingFetch } from 'services/config'
 import type { TypesLabel, TypesLabelValue } from 'services/code'
 import { ColorName, LIST_FETCHING_LIMIT, getErrorMessage } from 'utils/Utils'
-import { Label, LabelTitle } from '../Label'
 import { useStrings } from 'framework/strings'
+import { Label, LabelTitle } from '../Label'
 import css from './LabelFilter.module.scss'
 
 export const LabelFilter = (props: {
@@ -239,7 +240,7 @@ export const LabelFilter = (props: {
       }}
       items={() => getLabelsPromise()}
       disabled={loadingLabels}
-      onChange={() => {}}
+      onChange={noop}
       popoverClassName={css.labelDropdownPopover}
       icon={labelFilterOption?.length > 0 ? undefined : 'code-tag'}
       iconProps={{ size: 16 }}

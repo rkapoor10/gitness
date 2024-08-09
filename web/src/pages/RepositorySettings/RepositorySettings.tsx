@@ -31,8 +31,8 @@ import { useAppContext } from 'AppContext'
 import BranchProtectionListing from 'components/BranchProtection/BranchProtectionListing'
 import { SettingsTab, normalizeGitRef } from 'utils/GitUtils'
 import SecurityScanSettings from 'pages/RepositorySettings/SecurityScanSettings/SecurityScanSettings'
-import GeneralSettingsContent from './GeneralSettingsContent/GeneralSettingsContent'
 import LabelsListing from 'pages/Labels/LabelsListing'
+import GeneralSettingsContent from './GeneralSettingsContent/GeneralSettingsContent'
 import css from './RepositorySettings.module.scss'
 
 export default function RepositorySettings() {

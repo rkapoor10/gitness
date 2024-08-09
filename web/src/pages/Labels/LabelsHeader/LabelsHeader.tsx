@@ -15,15 +15,15 @@
  */
 import React, { useState } from 'react'
 import { Container, Layout, FlexExpander, ButtonVariation, Button, Checkbox } from '@harnessio/uicore'
+import { Render } from 'react-jsx-match'
 import { useStrings } from 'framework/strings'
 import { CodeIcon } from 'utils/GitUtils'
 import { useAppContext } from 'AppContext'
 import { SearchInputWithSpinner } from 'components/SearchInputWithSpinner/SearchInputWithSpinner'
 import { useGetSpaceParam } from 'hooks/useGetSpaceParam'
 import { permissionProps } from 'utils/Utils'
-import useLabelModal from '../LabelModal/LabelModal'
 import type { RepoRepositoryOutput } from 'services/code'
-import { Render } from 'react-jsx-match'
+import useLabelModal from '../LabelModal/LabelModal'
 import css from './LabelsHeader.module.scss'
 
 const LabelsHeader = ({

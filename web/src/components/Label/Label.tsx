@@ -18,12 +18,12 @@ import React from 'react'
 import cx from 'classnames'
 import { Button, ButtonSize, ButtonVariation, Container, Layout, Tag, Text } from '@harnessio/uicore'
 import { FontVariation } from '@harnessio/design-system'
-import { ColorName, getColorsObj, getScopeIcon } from 'utils/Utils'
-import type { RepoRepositoryOutput, TypesLabelValue } from 'services/code'
 import { useGet } from 'restful-react'
-import { useStrings } from 'framework/strings'
 import { Menu } from '@blueprintjs/core'
 import { Icon } from '@harnessio/icons'
+import { ColorName, getColorsObj, getScopeIcon } from 'utils/Utils'
+import type { RepoRepositoryOutput, TypesLabelValue } from 'services/code'
+import { useStrings } from 'framework/strings'
 import { useAppContext } from 'AppContext'
 import css from './Label.module.scss'
 
@@ -212,7 +212,6 @@ export const LabelTitle: React.FC<LabelValuesListProps> = props => {
   const { name, scope, label_color, value_count } = props
   const { standalone } = useAppContext()
   const colorObj = getColorsObj(label_color ? label_color : ColorName.Blue)
-  console.log(scope)
   const scopeIcon = getScopeIcon(scope, standalone)
   if (value_count) {
     return (
@@ -272,11 +271,7 @@ export const LabelTitle: React.FC<LabelValuesListProps> = props => {
 export const LabelValuesList: React.FC<LabelValuesListProps> = props => {
   const { name, repoMetadata, scope } = props
 
-  const {
-    data: labelValues
-    // loading: valueListLoading,
-    // refetch: refetchValuesList
-  } = useGet<TypesLabelValue[]>({
+  const { data: labelValues } = useGet<TypesLabelValue[]>({
     path: `/api/v1/repos/${repoMetadata?.path}/+/labels/${encodeURIComponent(name)}/values`
   })
 

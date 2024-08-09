@@ -28,9 +28,9 @@ import type { TypesPullReq, RepoRepositoryOutput, EnumPullReqReviewDecision, Typ
 import { ColorName, getErrorMessage } from 'utils/Utils'
 import { ReviewerSelect } from 'components/ReviewerSelect/ReviewerSelect'
 import { PullReqReviewDecision, processReviewDecision } from 'pages/PullRequest/PullRequestUtils'
-import ignoreFailed from '../../../../icons/ignoreFailed.svg?url'
 import { LabelSelector } from 'components/Label/LabelSelector/LabelSelector'
 import { Label } from 'components/Label/Label'
+import ignoreFailed from '../../../../icons/ignoreFailed.svg?url'
 import css from './PullRequestSideBar.module.scss'
 
 interface PullRequestSideBarProps {
@@ -410,8 +410,9 @@ const PullRequestSideBar = (props: PullRequestSideBarProps) => {
           <Container padding={{ top: 'medium', bottom: 'large' }}>
             <Layout.Horizontal className={css.labelsLayout}>
               {labels && labels.label_data?.length !== 0 ? (
-                labels?.label_data?.map(label => (
+                labels?.label_data?.map((label, index) => (
                   <Label
+                    key={index}
                     name={label.key as string}
                     label_color={label.color as ColorName}
                     label_value={{

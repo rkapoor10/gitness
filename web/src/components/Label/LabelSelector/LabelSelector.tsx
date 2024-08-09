@@ -27,16 +27,16 @@ import {
   TextInput,
   useToaster
 } from '@harnessio/uicore'
-import { ButtonRoleProps, LabelType, getErrorMessage, permissionProps } from 'utils/Utils'
 import cx from 'classnames'
 import { Menu, MenuItem, PopoverPosition } from '@blueprintjs/core'
-import { Label, LabelTitle } from '../Label'
-import { useStrings } from 'framework/strings'
 import { useMutate } from 'restful-react'
-import type { RepoRepositoryOutput, TypesPullReq } from 'services/code'
-import { useAppContext } from 'AppContext'
 import { Render } from 'react-jsx-match'
+import { useAppContext } from 'AppContext'
+import type { RepoRepositoryOutput, TypesPullReq } from 'services/code'
+import { useStrings } from 'framework/strings'
+import { ButtonRoleProps, LabelType, getErrorMessage, permissionProps } from 'utils/Utils'
 import { useGetSpaceParam } from 'hooks/useGetSpaceParam'
+import { Label, LabelTitle } from '../Label'
 import css from './LabelSelector.module.scss'
 
 export interface LabelSelectorProps {
@@ -219,15 +219,15 @@ const PopoverContent: React.FC<LabelSelectProps> = ({
   const inputRef = useRef<HTMLInputElement | null>()
   // const colorObj = getColorsObj(currentLabel?.label_color ? currentLabel.label_color : ColorName.Blue)
 
-  const filterLabels = (query: string) => {
-    if (!query) return allLabelsData.label_data // If no query, return all names
-    const lowerCaseQuery = query.toLowerCase()
+  const filterLabels = (labelQuery: string) => {
+    if (!labelQuery) return allLabelsData.label_data // If no query, return all names
+    const lowerCaseQuery = labelQuery.toLowerCase()
     return allLabelsData.label_data.filter((label: any) => label.key.toLowerCase().includes(lowerCaseQuery))
   }
 
-  const filteredLabelValues = (query: string) => {
-    if (!query) return currentLabel?.values // If no query, return all names
-    const lowerCaseQuery = query.toLowerCase()
+  const filteredLabelValues = (valueQuery: string) => {
+    if (!valueQuery) return currentLabel?.values // If no query, return all names
+    const lowerCaseQuery = valueQuery.toLowerCase()
     return currentLabel?.values?.filter((label: any) => label.value?.toLowerCase().includes(lowerCaseQuery))
   }
 
@@ -436,13 +436,13 @@ const LabelList = ({
       )
     }
   } else {
-    const filteredLabelValues = (query: string) => {
-      if (!query) return currentLabel?.values // If no query, return all names
-      const lowerCaseQuery = query.toLowerCase()
+    const filteredLabelValues = (filterQuery: string) => {
+      if (!filterQuery) return currentLabel?.values // If no query, return all names
+      const lowerCaseQuery = filterQuery.toLowerCase()
       return currentLabel?.values?.filter((label: any) => label.value?.toLowerCase().includes(lowerCaseQuery))
     }
-    const exactMatchFound = (list: any[], query: string) => {
-      const res = list ? list?.map((ele: any) => ele.value)?.includes(query) : false
+    const exactMatchFound = (list: any[], exactQuery: string) => {
+      const res = list ? list?.map((ele: any) => ele.value)?.includes(exactQuery) : false
       return res
     }
     const labelsValueList = filteredLabelValues(query)

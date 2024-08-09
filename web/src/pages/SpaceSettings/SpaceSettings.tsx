@@ -23,9 +23,9 @@ import { useGetRepositoryMetadata } from 'hooks/useGetRepositoryMetadata'
 import { useStrings } from 'framework/strings'
 import { useAppContext } from 'AppContext'
 import { SettingsTab, SpaceSettingsTab } from 'utils/GitUtils'
-import GeneralSpaceSettings from './GeneralSettings/GeneralSpaceSettings'
 import { useGetSpaceParam } from 'hooks/useGetSpaceParam'
 import SpaceLabelsListing from 'pages/Labels/SpaceLabelsListing'
+import GeneralSpaceSettings from './GeneralSettings/GeneralSpaceSettings'
 import css from './SpaceSettings.module.scss'
 
 export default function SpaceSettings() {

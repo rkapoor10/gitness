@@ -33,15 +33,15 @@ import {
 import { Icon } from '@harnessio/icons'
 import { FontVariation } from '@harnessio/design-system'
 import { Menu, MenuItem, PopoverInteractionKind, Position } from '@blueprintjs/core'
+import * as Yup from 'yup'
+import { FieldArray } from 'formik'
+import { useGet, useMutate } from 'restful-react'
 import { useModalHook } from 'hooks/useModalHook'
 import { useStrings } from 'framework/strings'
 import { useGetRepositoryMetadata } from 'hooks/useGetRepositoryMetadata'
-import * as Yup from 'yup'
 import { CodeIcon } from 'utils/GitUtils'
-import { FieldArray } from 'formik'
 import { colorsPannel, ColorName, ColorDetails, getErrorMessage, LabelType } from 'utils/Utils'
 import { Label } from 'components/Label/Label'
-import { useGet, useMutate } from 'restful-react'
 import type {
   EnumLabelColor,
   TypesLabel,
@@ -164,17 +164,37 @@ const useLabelModal = ({ refetchlabelsList }: LabelModalProps) => {
     openModal()
   }
 
+  const { mutate: createUpdateLabel } = useMutate({
+    verb: 'PUT',
+    path: `/api/v1/repos/${repoMetadata?.path as string}/+/labels`
+  })
+
+  const { mutate: createUpdateSpaceLabel } = useMutate({
+    verb: 'PUT',
+    path: `/api/v1/spaces/${space as string}/+/labels`
+  })
+
+  // ToDo: replace with getUsingFetch
+
+  const {
+    data: repoLabelValues
+    // loading: valueListLoading,
+    // refetch: refetchValuesList
+  } = useGet<TypesLabelValue[]>({
+    path: `/api/v1/repos/${repoMetadata?.path}/+/labels/${encodeURIComponent(
+      updateLabel?.key ? updateLabel?.key : ''
+    )}/values`
+  })
+
+  const {
+    data: spaceLabelValues
+    // loading: valueListLoading,
+    // refetch: refetchValuesList
+  } = useGet<TypesLabelValue[]>({
+    path: `/api/v1/spaces/${space}/+/labels/${encodeURIComponent(updateLabel?.key ? updateLabel?.key : '')}/values`
+  })
+
   const [openModal, hideModal] = useModalHook(() => {
-    const { mutate: createUpdateLabel } = useMutate({
-      verb: 'PUT',
-      path: `/api/v1/repos/${repoMetadata?.path as string}/+/labels`
-    })
-
-    const { mutate: createUpdateSpaceLabel } = useMutate({
-      verb: 'PUT',
-      path: `/api/v1/spaces/${space as string}/+/labels`
-    })
-
     const handleLabelSubmit = (formData: LabelFormData) => {
       const { labelName, color, labelValues, description, allowDynamicValues, id } = formData
       const createLabelPayload: { label: TypesSaveLabelInput; values: TypesSaveLabelValueInput[] } = {
@@ -240,26 +260,6 @@ const useLabelModal = ({ refetchlabelsList }: LabelModalProps) => {
       }
     }
 
-    // ToDo: replace with getUsingFetch
-
-    const {
-      data: labelValues
-      // loading: valueListLoading,
-      // refetch: refetchValuesList
-    } = useGet<TypesLabelValue[]>({
-      path: `/api/v1/repos/${repoMetadata?.path}/+/labels/${encodeURIComponent(
-        updateLabel?.key ? updateLabel?.key : ''
-      )}/values`
-    })
-
-    const {
-      data: spaceLabelValues
-      // loading: valueListLoading,
-      // refetch: refetchValuesList
-    } = useGet<TypesLabelValue[]>({
-      path: `/api/v1/spaces/${space}/+/labels/${encodeURIComponent(updateLabel?.key ? updateLabel?.key : '')}/values`
-    })
-
     return (
       <Dialog
         isOpen
@@ -287,7 +287,7 @@ const useLabelModal = ({ refetchlabelsList }: LabelModalProps) => {
                   labelName: updateLabel?.key ?? '',
                   allowDynamicValues: updateLabel?.type === LabelType.DYNAMIC,
                   labelValues:
-                    labelValues?.map(valueObj => {
+                    repoLabelValues?.map(valueObj => {
                       return { id: valueObj.id, value: valueObj.value, color: valueObj.color as ColorName }
                     }) ?? []
                 }

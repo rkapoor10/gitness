@@ -42,8 +42,8 @@ import { PullRequestStateLabel } from 'components/PullRequestStateLabel/PullRequ
 import { LoadingSpinner } from 'components/LoadingSpinner/LoadingSpinner'
 import useSpaceSSE from 'hooks/useSpaceSSE'
 import { TimePopoverWithLocal } from 'utils/timePopoverLocal/TimePopoverWithLocal'
-import { PullRequestsContentHeader } from './PullRequestsContentHeader/PullRequestsContentHeader'
 import { Label } from 'components/Label/Label'
+import { PullRequestsContentHeader } from './PullRequestsContentHeader/PullRequestsContentHeader'
 import css from './PullRequests.module.scss'
 
 const SSE_EVENTS = ['pullreq_updated']
@@ -183,8 +183,9 @@ export default function PullRequests() {
                         </Layout.Horizontal>
                         <Render
                           when={row.original && row.original.labels && row.original.labels.length !== 0 && !prLoading}>
-                          {row.original?.labels?.map(label => (
+                          {row.original?.labels?.map((label, index) => (
                             <Label
+                              key={index}
                               name={label.key as string}
                               label_color={label.color as ColorName}
                               label_value={{
@@ -310,8 +311,9 @@ export default function PullRequests() {
                     style={{ flexWrap: 'wrap', gap: '5px' }}>
                     <Text color={Color.GREY_400}>Showing {data?.length} results for</Text>
 
-                    {labelFilter?.map(label => (
+                    {labelFilter?.map((label, index) => (
                       <Label
+                        key={index}
                         name={label.labelObj.key as string}
                         label_color={label.labelObj.color as ColorName}
                         label_value={{

@@ -30,6 +30,7 @@ import { useGet, useMutate } from 'restful-react'
 import { Color } from '@harnessio/design-system'
 import { Intent } from '@blueprintjs/core'
 import { useHistory } from 'react-router-dom'
+import { Icon } from '@harnessio/icons'
 import { useQueryParams } from 'hooks/useQueryParams'
 import { usePageIndex } from 'hooks/usePageIndex'
 import {
@@ -49,12 +50,11 @@ import { OptionsMenuButton } from 'components/OptionsMenuButton/OptionsMenuButto
 import type { TypesLabel, TypesLabelValue } from 'services/code'
 import { useAppContext } from 'AppContext'
 import { useGetSpaceParam } from 'hooks/useGetSpaceParam'
-import LabelsHeader from './LabelsHeader/LabelsHeader'
 import { useUpdateQueryParams } from 'hooks/useUpdateQueryParams'
 import { LabelTitle, SpaceLabelValuesList } from 'components/Label/Label'
-import useLabelModal from './LabelModal/LabelModal'
 import { LoadingSpinner } from 'components/LoadingSpinner/LoadingSpinner'
-import { Icon } from '@harnessio/icons'
+import LabelsHeader from './LabelsHeader/LabelsHeader'
+import useLabelModal from './LabelModal/LabelModal'
 import css from './LabelsListing.module.scss'
 
 interface LabelType extends TypesLabel {
@@ -199,7 +199,6 @@ const SpaceLabelsListing = (props: { activeTab: string; spaceRef: string | undef
             verb: 'DELETE',
             path: `/api/v1/spaces/${spaceRef}/+/labels/${encodeURIComponent(encodedLabelKey)}`
           })
-          const { showSuccess, showError } = useToaster()
           const confirmLabelDelete = useConfirmAction({
             title: getString('labels.deleteLabel'),
             confirmText: getString('confirmDelete'),
