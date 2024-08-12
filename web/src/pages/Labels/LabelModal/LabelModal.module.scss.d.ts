@@ -22,3 +22,4 @@ export declare const labelModal: string
 export declare const modalForm: string
 export declare const popover: string
 export declare const selectColor: string
+export declare const yellowContainer: string

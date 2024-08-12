@@ -624,6 +624,8 @@ export interface StringsMap {
   'labels.createLabel': string
   'labels.createdIn': string
   'labels.deleteLabel': string
+  'labels.deleteLabelConfirm': string
+  'labels.intentText': string
   'labels.label': string
   'labels.labelCreated': string
   'labels.labelCreationFailed': string

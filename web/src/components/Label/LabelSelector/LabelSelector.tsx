@@ -333,7 +333,7 @@ const PopoverContent: React.FC<LabelSelectProps> = ({
                 inputRef={ref => (inputRef.current = ref)}
                 defaultValue={query}
                 autoFocus
-                placeholder={'Find a value'}
+                placeholder={currentLabel.type === LabelType.STATIC ? 'Find a value' : 'Find or add a new value'}
                 onInput={e => {
                   const _value = e.currentTarget.value || ''
                   setQuery(_value)

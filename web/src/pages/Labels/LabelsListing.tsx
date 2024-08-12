@@ -196,9 +196,9 @@ const LabelsListing = (props: { activeTab: string; repoMetadata: RepoRepositoryO
           })
           const confirmLabelDelete = useConfirmAction({
             title: getString('labels.deleteLabel'),
-            confirmText: getString('confirmDelete'),
+            confirmText: getString('delete'),
             intent: Intent.DANGER,
-            message: <String useRichText stringID="deleteTagConfirm" vars={{ name: row.original.key }} />,
+            message: <String useRichText stringID="labels.deleteLabelConfirm" vars={{ name: row.original.key }} />,
             action: async () => {
               deleteLabel({})
                 .then(() => {
@@ -215,7 +215,7 @@ const LabelsListing = (props: { activeTab: string; repoMetadata: RepoRepositoryO
                   setPage(1)
                 })
                 .catch(error => {
-                  showError(getErrorMessage(error), 0, 'failedToDeleteTag')
+                  showError(getErrorMessage(error), 0, 'failed to delete label')
                 })
             }
           })

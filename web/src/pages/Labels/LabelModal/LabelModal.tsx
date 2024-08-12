@@ -31,11 +31,12 @@ import {
   FormikForm
 } from '@harnessio/uicore'
 import { Icon } from '@harnessio/icons'
-import { FontVariation } from '@harnessio/design-system'
+import { Color, FontVariation } from '@harnessio/design-system'
 import { Menu, MenuItem, PopoverInteractionKind, Position } from '@blueprintjs/core'
 import * as Yup from 'yup'
 import { FieldArray } from 'formik'
 import { useGet, useMutate } from 'restful-react'
+import { Render } from 'react-jsx-match'
 import { useModalHook } from 'hooks/useModalHook'
 import { useStrings } from 'framework/strings'
 import { useGetRepositoryMetadata } from 'hooks/useGetRepositoryMetadata'
@@ -248,10 +249,16 @@ const useLabelModal = ({ refetchlabelsList }: LabelModalProps) => {
     }
 
     const validationSchema = Yup.object({
-      labelName: Yup.string().required(getString('labels.labelNameReq')),
+      labelName: Yup.string()
+        .max(50, 'Name must be 50 characters or less')
+        .test('no-newlines', 'Name cannot contain new lines', value => !/\r|\n/.test(value as string))
+        .required(getString('labels.labelNameReq')),
       labelValues: Yup.array().of(
         Yup.object({
-          value: Yup.string().required(getString('labels.labelValueReq')),
+          value: Yup.string()
+            .max(50, 'Name must be 50 characters or less')
+            .test('no-newlines', 'Name cannot contain new lines', value => !/\r|\n/.test(value as string))
+            .required(getString('labels.labelValueReq')),
           color: Yup.string()
         })
       )
@@ -319,11 +326,24 @@ const useLabelModal = ({ refetchlabelsList }: LabelModalProps) => {
           {formik => {
             return (
               <FormikForm onKeyDown={handleKeyDown}>
+                <Render when={modalMode === ModalMode.UPDATE}>
+                  <Container className={css.yellowContainer}>
+                    <Text
+                      icon="main-issue"
+                      iconProps={{ size: 16, color: Color.ORANGE_700, margin: { right: 'small' } }}
+                      padding={{ left: 'large', right: 'large', top: 'small', bottom: 'small' }}
+                      color={Color.WARNING}>
+                      {getString('labels.intentText', {
+                        space: updateLabel?.key
+                      })}
+                    </Text>
+                  </Container>
+                </Render>
                 <Layout.Horizontal spacing={'large'}>
                   <Layout.Vertical style={{ width: '55%' }}>
                     <Layout.Vertical spacing="large" className={css.modalForm}>
                       <Container margin={{ top: 'medium' }}>
-                        <Text font={{ variation: FontVariation.BODY2 }}>Label Name</Text>
+                        <Text font={{ variation: FontVariation.BODY2 }}>{getString('labels.labelName')}</Text>
                         <Layout.Horizontal
                           flex={{ alignItems: formik.isValid ? 'center' : 'flex-start', justifyContent: 'flex-start' }}
                           style={{ gap: '4px', margin: '4px' }}>

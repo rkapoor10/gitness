@@ -93,3 +93,11 @@
   padding-right: 0 !important;
   padding-left: 15px !important;
 }
+
+.yellowContainer {
+  background: var(--orange-50) !important;
+  padding: var(--spacing-medium) var(--spacing-small);
+  margin: 0 var(--spacing-large) 0 0 !important;
+  border-radius: 4px;
+  margin-bottom: 5px !important;
+}
