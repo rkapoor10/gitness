@@ -16,12 +16,12 @@
 
 /* eslint-disable */
 // This is an auto-generated file
-export declare const alignLayout: string
-export declare const iconPadding: string
-export declare const labelsLayout: string
-export declare const redIcon: string
-export declare const reviewerAvatar: string
-export declare const reviewerName: string
-export declare const selectButton: string
-export declare const semiBoldText: string
-export declare const svgOutdated: string
+export declare const danger: string
+export declare const icon: string
+export declare const isDark: string
+export declare const labelKey: string
+export declare const labelTag: string
+export declare const labelValue: string
+export declare const popover: string
+export declare const removeBtnTag: string
+export declare const standaloneKey: string

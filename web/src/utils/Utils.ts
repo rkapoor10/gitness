@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Intent, IToaster, IToastProps, Position, Toaster } from '@blueprintjs/core'
+import { IconName, Intent, IToaster, IToastProps, Position, Toaster } from '@blueprintjs/core'
 import { get } from 'lodash-es'
 import moment from 'moment'
 import langMap from 'lang-map'
@@ -28,9 +28,10 @@ import type {
   TypesRuleViolations,
   TypesViolation,
   TypesCodeOwnerEvaluationEntry,
-  TypesListCommitResponse
+  TypesListCommitResponse,
+  RepoRepositoryOutput
 } from 'services/code'
-import type { GitInfoProps } from './GitUtils'
+import { CodeIcon, type GitInfoProps } from './GitUtils'
 
 export enum ACCESS_MODES {
   VIEW,
@@ -746,4 +747,78 @@ export function removeSpecificTextOptimized(
   if (changes.length > 0) {
     viewRef?.current?.dispatch({ changes })
   }
+}
+
+export const enum LabelType {
+  DYNAMIC = 'dynamic',
+  STATIC = 'static'
+}
+
+export enum ColorName {
+  Red = 'red',
+  Green = 'green',
+  Yellow = 'yellow',
+  Blue = 'blue',
+  Pink = 'pink',
+  Purple = 'purple',
+  Violet = 'violet',
+  Indigo = 'indigo',
+  Cyan = 'cyan',
+  Orange = 'orange',
+  Brown = 'brown',
+  Mint = 'mint',
+  Lime = 'lime'
+}
+
+export interface ColorDetails {
+  stroke: string
+  background: string
+  text: string
+  backgroundWithoutStroke: string
+}
+export const colorsPannel: Record<ColorName, ColorDetails> = {
+  [ColorName.Red]: { background: '#FFF7F7', stroke: '#F3A9AA', text: '#C7292F', backgroundWithoutStroke: '#FFE8EB' },
+  [ColorName.Green]: { background: '#E9F9EE', stroke: '#85CBA2', text: '#16794C', backgroundWithoutStroke: '#E8F9ED' },
+  [ColorName.Yellow]: { background: '#FFF9ED', stroke: '#E4B86F', text: '#92582D', backgroundWithoutStroke: '#FFF3D1' },
+  [ColorName.Blue]: { background: '#F1FCFF', stroke: '#7BC8E0', text: '#236E93', backgroundWithoutStroke: '#E0F9FF' },
+  [ColorName.Pink]: { background: '#FFF7FC', stroke: '#ECA8D2', text: '#C41B87', backgroundWithoutStroke: '#FEECF7' },
+  [ColorName.Purple]: { background: '#FFF8FF', stroke: '#DFAAE3', text: '#9C2AAD', backgroundWithoutStroke: '#FCEDFC' },
+  [ColorName.Violet]: { background: '#FBFAFF', stroke: '#C1B4F3', text: '#5645AF', backgroundWithoutStroke: '#F3F0FF' },
+  [ColorName.Indigo]: { background: '#F8FAFF', stroke: '#A9BDF5', text: '#3250B2', backgroundWithoutStroke: '#EDF2FF' },
+  [ColorName.Cyan]: { background: '#F2FCFD', stroke: '#7DCBD9', text: '#0B7792', backgroundWithoutStroke: '#E4F9FB' },
+  [ColorName.Orange]: { background: '#FFF8F4', stroke: '#FFA778', text: '#995137', backgroundWithoutStroke: '#FFEDD5' },
+  [ColorName.Brown]: { background: '#FCF9F6', stroke: '#DBB491', text: '#805C43', backgroundWithoutStroke: '#F8EFE7' },
+  [ColorName.Mint]: { background: '#EFFEF9', stroke: '#7FD0BD', text: '#247469', backgroundWithoutStroke: '#DDFBF3' },
+  [ColorName.Lime]: { background: '#F7FCF0', stroke: '#AFC978', text: '#586729', backgroundWithoutStroke: '#EDFADA' }
+  // Add more colors when required
+}
+
+export const getColorsObj = (colorKey: ColorName): ColorDetails => {
+  return colorsPannel[colorKey]
+}
+
+export const getLabelScope = (
+  scope: any,
+  isGitness: boolean,
+  repoMetadata: RepoRepositoryOutput | undefined,
+  space: string
+) => {
+  if (scope === 0) return { message: repoMetadata?.identifier, icon: CodeIcon.Repo as IconName }
+  else if (isGitness) {
+    return { message: space, icon: 'nav-project' as IconName }
+  }
+  return { message: 'unkown', icon: 'question' as IconName }
+}
+
+export function customEncodeURIComponent(str: string) {
+  return encodeURIComponent(str).replace(/!/g, '%21')
+}
+
+export const getScopeIcon = (scope: any, standalone: boolean) => {
+  if (scope === 0) return undefined
+  if (scope === 1 && standalone) return 'nav-project' as IconName
+  if (scope === 1 && standalone) return 'Account' as IconName
+  if (scope === 2) return 'nav-organization' as IconName
+  if (scope === 3) return 'nav-project' as IconName
+  return undefined
 }

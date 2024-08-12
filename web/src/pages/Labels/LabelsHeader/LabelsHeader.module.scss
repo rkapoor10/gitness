@@ -15,55 +15,50 @@
  */
 
 .main {
-  min-height: var(--page-height);
   background-color: var(--primary-bg) !important;
-
   .table {
     .row {
-      height: fit-content;
+      height: 80px;
       display: flex;
       justify-content: center;
-      padding: 0;
-
       .title {
         font-weight: 600;
-        display: flex;
-
-        .convoIcon {
-          padding-top: 1px !important;
-        }
-      }
-
-      .convo {
-        white-space: nowrap;
-      }
-      .prLabels {
-        align-items: center;
-        justify-content: flex-start;
-        flex-wrap: wrap;
-        gap: 10px;
-      }
-      .prwrap {
-        width: 80% !important;
-        flex-wrap: wrap;
-      }
-    }
-
-    .rowLink:hover {
-      &,
-      *:not(a) {
-        text-decoration: none !important;
       }
     }
   }
-
-  .titleRow {
-    padding-left: var(--spacing-small);
-    align-items: center;
-    padding: var(--spacing-medium);
+  .noData > div {
+    height: calc(100vh - var(--page-header-height, 64px) - 120px) !important;
   }
 }
 
-.state {
-  font-weight: 600;
+.toggle {
+  > input {
+    opacity: 0;
+    position: relative;
+    top: 40%;
+    z-index: 999;
+  }
+}
+
+.toggleEnable {
+  > input {
+    left: 52%;
+  }
+}
+
+.toggleDisable {
+  > input {
+    left: 32%;
+  }
+}
+
+.cancelButton {
+  margin-left: var(--spacing-small) !important;
+}
+
+.scopeCheckbox {
+  display: flex;
+  align-items: center;
+  padding-right: 7px !important;
+  padding-left: 7px !important;
 }

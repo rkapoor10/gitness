@@ -28,23 +28,41 @@ import {
 } from '@harnessio/uicore'
 import { Color, FontVariation } from '@harnessio/design-system'
 import { sortBy } from 'lodash-es'
+import { Render } from 'react-jsx-match'
 import { getConfig, getUsingFetch } from 'services/config'
 import { useStrings } from 'framework/strings'
 import { CodeIcon, GitInfoProps, makeDiffRefs, PullRequestFilterOption } from 'utils/GitUtils'
 import { useGetSpaceParam } from 'hooks/useGetSpaceParam'
-import type { TypesPrincipalInfo, TypesUser } from 'services/code'
+import type { TypesLabel, TypesLabelValue, TypesPrincipalInfo, TypesUser } from 'services/code'
 import { useAppContext } from 'AppContext'
 import { SearchInputWithSpinner } from 'components/SearchInputWithSpinner/SearchInputWithSpinner'
 import { PageBrowserProps, permissionProps } from 'utils/Utils'
 import { useQueryParams } from 'hooks/useQueryParams'
+import { LabelFilter } from 'components/Label/LabelFilter/LabelFilter'
 import css from './PullRequestsContentHeader.module.scss'
 
 interface PullRequestsContentHeaderProps extends Pick<GitInfoProps, 'repoMetadata'> {
   loading?: boolean
   activePullRequestFilterOption?: string
   activePullRequestAuthorFilterOption?: string
+  activePullRequestLabelFilterOption?: {
+    labelId: number
+    valueId: number | undefined
+    type: 'label' | 'value'
+    labelObj: TypesLabel
+    valueObj: TypesLabelValue | undefined
+  }[]
   onPullRequestFilterChanged: React.Dispatch<React.SetStateAction<string>>
   onPullRequestAuthorFilterChanged: (authorFilter: string) => void
+  onPullRequestLabelFilterChanged: (
+    labelFilter: {
+      labelId: number
+      valueId: number | undefined
+      type: 'label' | 'value'
+      labelObj: TypesLabel
+      valueObj: TypesLabelValue | undefined
+    }[]
+  ) => void
   onSearchTermChanged: (searchTerm: string) => void
 }
 
@@ -52,9 +70,11 @@ export function PullRequestsContentHeader({
   loading,
   onPullRequestFilterChanged,
   onPullRequestAuthorFilterChanged,
+  onPullRequestLabelFilterChanged,
   onSearchTermChanged,
   activePullRequestFilterOption = PullRequestFilterOption.OPEN,
   activePullRequestAuthorFilterOption,
+  activePullRequestLabelFilterOption,
   repoMetadata
 }: PullRequestsContentHeaderProps) {
   const history = useHistory()
@@ -62,11 +82,13 @@ export function PullRequestsContentHeader({
   const browserParams = useQueryParams<PageBrowserProps>()
   const [filterOption, setFilterOption] = useState(activePullRequestFilterOption)
   const [authorFilterOption, setAuthorFilterOption] = useState(activePullRequestAuthorFilterOption)
+  const [labelFilterOption, setLabelFilterOption] = useState(activePullRequestLabelFilterOption)
   const [searchTerm, setSearchTerm] = useState('')
   const [query, setQuery] = useState<string>('')
   const [loadingAuthors, setLoadingAuthors] = useState<boolean>(false)
   const space = useGetSpaceParam()
   const { hooks, currentUser, standalone, routingId, routes } = useAppContext()
+  const { CODE_PULLREQ_LABELS: isLabelEnabled } = hooks?.useFeatureFlags()
   const permPushResult = hooks?.usePermissionTranslate?.(
     {
       resource: {
@@ -77,6 +99,10 @@ export function PullRequestsContentHeader({
     },
     [space]
   )
+
+  useEffect(() => {
+    setLabelFilterOption(activePullRequestLabelFilterOption)
+  }, [activePullRequestLabelFilterOption])
 
   useEffect(() => {
     setFilterOption(browserParams?.state as string)
@@ -176,6 +202,16 @@ export function PullRequestsContentHeader({
           }}
         />
         <FlexExpander />
+        <Render when={isLabelEnabled || standalone}>
+          <LabelFilter
+            labelFilterOption={labelFilterOption}
+            setLabelFilterOption={setLabelFilterOption}
+            onPullRequestLabelFilterChanged={onPullRequestLabelFilterChanged}
+            bearerToken={bearerToken}
+            repoMetadata={repoMetadata}
+            spaceRef={space}
+          />
+        </Render>
         <DropDown
           value={authorFilterOption}
           items={() => getAuthorsPromise()}

@@ -31,13 +31,15 @@ import { useAppContext } from 'AppContext'
 import BranchProtectionListing from 'components/BranchProtection/BranchProtectionListing'
 import { SettingsTab, normalizeGitRef } from 'utils/GitUtils'
 import SecurityScanSettings from 'pages/RepositorySettings/SecurityScanSettings/SecurityScanSettings'
+import LabelsListing from 'pages/Labels/LabelsListing'
 import GeneralSettingsContent from './GeneralSettingsContent/GeneralSettingsContent'
 import css from './RepositorySettings.module.scss'
 
 export default function RepositorySettings() {
   const { repoMetadata, error, loading, refetch, settingSection, gitRef, resourcePath } = useGetRepositoryMetadata()
   const history = useHistory()
-  const { routes } = useAppContext()
+  const { routes, hooks, standalone } = useAppContext()
+  const { CODE_PULLREQ_LABELS: isLabelEnabled } = hooks?.useFeatureFlags()
   const [activeTab, setActiveTab] = React.useState<string>(settingSection || SettingsTab.general)
   const { getString } = useStrings()
   const { isRepositoryEmpty } = useGetResourceContent({
@@ -71,7 +73,17 @@ export default function RepositorySettings() {
       id: SettingsTab.security,
       title: getString('security'),
       panel: <SecurityScanSettings repoMetadata={repoMetadata} activeTab={activeTab} />
-    }
+    },
+    ...(isLabelEnabled || standalone
+      ? [
+          {
+            id: SettingsTab.labels,
+            title: getString('labels.labels'),
+            panel: <LabelsListing repoMetadata={repoMetadata} activeTab={activeTab} />
+          }
+        ]
+      : [])
+
     // {
     //   id: SettingsTab.webhooks,
     //   title: getString('webhooks'),
