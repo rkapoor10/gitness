@@ -267,9 +267,8 @@ const useLabelModal = ({ refetchlabelsList }: LabelModalProps) => {
         isOpen
         onOpening={() => {
           if (modalMode === ModalMode.UPDATE) {
-            if (repoMetadata && updateLabel?.scope === 0)
-              refetchRepoValuesList().then(() => console.log('repo', spaceLabelValues, repoLabelValues))
-            else refetchSpaceValuesList().then(() => console.log('space', spaceLabelValues, repoLabelValues))
+            if (repoMetadata && updateLabel?.scope === 0) refetchRepoValuesList()
+            else refetchSpaceValuesList()
           }
         }}
         enforceFocus={false}

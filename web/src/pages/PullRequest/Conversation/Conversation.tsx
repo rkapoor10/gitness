@@ -29,6 +29,7 @@ import {
 import { useLocation } from 'react-router-dom'
 import { useGet, useMutate } from 'restful-react'
 import { get, orderBy } from 'lodash-es'
+import { Render } from 'react-jsx-match'
 import type { GitInfoProps } from 'utils/GitUtils'
 import { useStrings } from 'framework/strings'
 import { useAppContext } from 'AppContext'
@@ -69,7 +70,6 @@ import { CodeCommentHeader } from './CodeCommentHeader'
 import { SystemComment } from './SystemComment'
 import PullRequestOverviewPanel from './PullRequestOverviewPanel/PullRequestOverviewPanel'
 import css from './Conversation.module.scss'
-import { Render } from 'react-jsx-match'
 
 export interface ConversationProps extends Pick<GitInfoProps, 'repoMetadata' | 'pullReqMetadata'> {
   prStats?: TypesPullReqStats
@@ -268,7 +268,7 @@ export const Conversation: React.FC<ConversationProps> = ({
           commentItems[0].payload?.type !== CommentType.LABEL_MODIFY || isLabelEnabled || standalone
         if (isSystemComment(commentItems)) {
           return (
-            <Render when={renderLabelActivities}>
+            <Render key={`thread-${threadId}`} when={renderLabelActivities}>
               <ThreadSection
                 key={`thread-${threadId}`}
                 onlyTitle
