@@ -282,7 +282,7 @@ const LabelsListing = (props: { activeTab: string; repoMetadata: RepoRepositoryO
       )}
 
       <Container className={css.main} padding={{ bottom: 'large', right: 'xlarge', left: 'xlarge' }}>
-        {labelsList && !labelsListLoading ? (
+        {labelsList && !labelsListLoading && labelsList.length !== 0 ? (
           <TableV2<LabelType>
             className={css.table}
             columns={columns}
@@ -298,7 +298,7 @@ const LabelsListing = (props: { activeTab: string; repoMetadata: RepoRepositoryO
         <ResourceListingPagination response={response} page={page} setPage={setPage} />
       </Container>
       <NoResultCard
-        showWhen={() => labelsList?.length === 0}
+        showWhen={() => (!labelsList && !labelsListLoading) || labelsList?.length === 0}
         forSearch={!!searchTerm}
         message={getString('labels.noRepoLabelsFound')}
         buttonText={getString('labels.newLabel')}

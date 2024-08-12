@@ -177,21 +177,23 @@ const useLabelModal = ({ refetchlabelsList }: LabelModalProps) => {
   // ToDo: replace with getUsingFetch
 
   const {
-    data: repoLabelValues
-    // loading: valueListLoading,
-    // refetch: refetchValuesList
+    data: repoLabelValues,
+    loading: repoValueListLoading,
+    refetch: refetchRepoValuesList
   } = useGet<TypesLabelValue[]>({
     path: `/api/v1/repos/${repoMetadata?.path}/+/labels/${encodeURIComponent(
       updateLabel?.key ? updateLabel?.key : ''
-    )}/values`
+    )}/values`,
+    lazy: true
   })
 
   const {
-    data: spaceLabelValues
-    // loading: valueListLoading,
-    // refetch: refetchValuesList
+    data: spaceLabelValues,
+    loading: spaceValueListLoading,
+    refetch: refetchSpaceValuesList
   } = useGet<TypesLabelValue[]>({
-    path: `/api/v1/spaces/${space}/+/labels/${encodeURIComponent(updateLabel?.key ? updateLabel?.key : '')}/values`
+    path: `/api/v1/spaces/${space}/+/labels/${encodeURIComponent(updateLabel?.key ? updateLabel?.key : '')}/values`,
+    lazy: true
   })
 
   const [openModal, hideModal] = useModalHook(() => {
@@ -263,6 +265,13 @@ const useLabelModal = ({ refetchlabelsList }: LabelModalProps) => {
     return (
       <Dialog
         isOpen
+        onOpening={() => {
+          if (modalMode === ModalMode.UPDATE) {
+            if (repoMetadata && updateLabel?.scope === 0)
+              refetchRepoValuesList().then(() => console.log('repo', spaceLabelValues, repoLabelValues))
+            else refetchSpaceValuesList().then(() => console.log('space', spaceLabelValues, repoLabelValues))
+          }
+        }}
         enforceFocus={false}
         onClose={onClose}
         title={modalMode === ModalMode.SAVE ? getString('labels.createLabel') : getString('labels.updateLabel')}
@@ -279,7 +288,7 @@ const useLabelModal = ({ refetchlabelsList }: LabelModalProps) => {
                   allowDynamicValues: false,
                   labelValues: []
                 }
-              : repoMetadata
+              : repoMetadata && updateLabel?.scope === 0
               ? {
                   color: updateLabel?.color as ColorName,
                   description: updateLabel?.description,
@@ -474,7 +483,7 @@ const useLabelModal = ({ refetchlabelsList }: LabelModalProps) => {
         </Formik>
       </Dialog>
     )
-  }, [updateLabel])
+  }, [updateLabel, repoLabelValues, spaceLabelValues, repoValueListLoading, spaceValueListLoading])
 
   return {
     openModal,

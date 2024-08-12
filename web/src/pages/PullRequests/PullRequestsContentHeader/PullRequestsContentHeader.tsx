@@ -37,6 +37,7 @@ import { useAppContext } from 'AppContext'
 import { SearchInputWithSpinner } from 'components/SearchInputWithSpinner/SearchInputWithSpinner'
 import { PageBrowserProps, permissionProps } from 'utils/Utils'
 import { useQueryParams } from 'hooks/useQueryParams'
+import { Render } from 'react-jsx-match'
 import { LabelFilter } from 'components/Label/LabelFilter/LabelFilter'
 import css from './PullRequestsContentHeader.module.scss'
 
@@ -87,6 +88,7 @@ export function PullRequestsContentHeader({
   const [loadingAuthors, setLoadingAuthors] = useState<boolean>(false)
   const space = useGetSpaceParam()
   const { hooks, currentUser, standalone, routingId, routes } = useAppContext()
+  const { CODE_PULLREQ_LABELS: isLabelEnabled } = hooks?.useFeatureFlags()
   const permPushResult = hooks?.usePermissionTranslate?.(
     {
       resource: {
@@ -200,14 +202,16 @@ export function PullRequestsContentHeader({
           }}
         />
         <FlexExpander />
-        <LabelFilter
-          labelFilterOption={labelFilterOption}
-          setLabelFilterOption={setLabelFilterOption}
-          onPullRequestLabelFilterChanged={onPullRequestLabelFilterChanged}
-          bearerToken={bearerToken}
-          repoMetadata={repoMetadata}
-          spaceRef={space}
-        />
+        <Render when={isLabelEnabled || standalone}>
+          <LabelFilter
+            labelFilterOption={labelFilterOption}
+            setLabelFilterOption={setLabelFilterOption}
+            onPullRequestLabelFilterChanged={onPullRequestLabelFilterChanged}
+            bearerToken={bearerToken}
+            repoMetadata={repoMetadata}
+            spaceRef={space}
+          />
+        </Render>
         <DropDown
           value={authorFilterOption}
           items={() => getAuthorsPromise()}

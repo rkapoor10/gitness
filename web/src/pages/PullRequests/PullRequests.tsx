@@ -51,7 +51,8 @@ const SSE_EVENTS = ['pullreq_updated']
 export default function PullRequests() {
   const { getString } = useStrings()
   const history = useHistory()
-  const { routes } = useAppContext()
+  const { routes, hooks, standalone } = useAppContext()
+  const { CODE_PULLREQ_LABELS: isLabelEnabled } = hooks?.useFeatureFlags()
   const [searchTerm, setSearchTerm] = useState<string | undefined>()
   const browserParams = useQueryParams<PageBrowserProps>()
   const [filter, setFilter] = useState(browserParams?.state || (PullRequestFilterOption.OPEN as string))
@@ -132,8 +133,6 @@ export default function PullRequests() {
     onEvent: eventHandler
   })
 
-  const { standalone } = useAppContext()
-  const { hooks } = useAppContext()
   const permPushResult = hooks?.usePermissionTranslate?.(
     {
       resource: {
@@ -182,7 +181,13 @@ export default function PullRequests() {
                           </Container>
                         </Layout.Horizontal>
                         <Render
-                          when={row.original && row.original.labels && row.original.labels.length !== 0 && !prLoading}>
+                          when={
+                            (isLabelEnabled || standalone) &&
+                            row.original &&
+                            row.original.labels &&
+                            row.original.labels.length !== 0 &&
+                            !prLoading
+                          }>
                           {row.original?.labels?.map((label, index) => (
                             <Label
                               key={index}
@@ -305,7 +310,7 @@ export default function PullRequests() {
             />
             <Container padding="xlarge">
               <Container padding={{ top: 'medium', bottom: 'large' }}>
-                {labelFilter && labelFilter?.length !== 0 ? (
+                {(isLabelEnabled || standalone) && labelFilter && labelFilter?.length !== 0 ? (
                   <Layout.Horizontal
                     flex={{ alignItems: 'center', justifyContent: 'flex-start' }}
                     style={{ flexWrap: 'wrap', gap: '5px' }}>
@@ -351,9 +356,11 @@ export default function PullRequests() {
                     <Text color={Color.GREY_400} font={{ variation: FontVariation.H6 }}>
                       {data?.length} <span>{getString('pullRequests')}</span>
                     </Text>
-                    <Text color={Color.GREY_400} font={{ italic: true }}>
-                      {getString('labels.scopeMessage')}
-                    </Text>
+                    <Render when={isLabelEnabled || standalone}>
+                      <Text color={Color.GREY_400} font={{ italic: true }}>
+                        {getString('labels.scopeMessage')}
+                      </Text>
+                    </Render>
                   </Layout.Horizontal>
                 )}
               </Container>

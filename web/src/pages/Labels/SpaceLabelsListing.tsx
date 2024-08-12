@@ -287,7 +287,7 @@ const SpaceLabelsListing = (props: { activeTab: string; spaceRef: string | undef
       )}
 
       <Container className={css.main} padding={{ bottom: 'large', right: 'xlarge', left: 'xlarge' }}>
-        {labelsList && labelsList.length !== 0 ? (
+        {labelsList && !labelsListLoading && labelsList.length !== 0 ? (
           <TableV2<LabelType>
             className={css.table}
             columns={columns}
@@ -304,7 +304,7 @@ const SpaceLabelsListing = (props: { activeTab: string; spaceRef: string | undef
       </Container>
 
       <NoResultCard
-        showWhen={() => labelsList?.length === 0}
+        showWhen={() => (!labelsList && !labelsListLoading) || labelsList?.length === 0}
         forSearch={!!searchTerm}
         message={getString('labels.noScopeLabelsFound')}
         buttonText={getString('labels.newLabel')}

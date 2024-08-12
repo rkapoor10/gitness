@@ -38,7 +38,8 @@ import css from './RepositorySettings.module.scss'
 export default function RepositorySettings() {
   const { repoMetadata, error, loading, refetch, settingSection, gitRef, resourcePath } = useGetRepositoryMetadata()
   const history = useHistory()
-  const { routes } = useAppContext()
+  const { routes, hooks, standalone } = useAppContext()
+  const { CODE_PULLREQ_LABELS: isLabelEnabled } = hooks?.useFeatureFlags()
   const [activeTab, setActiveTab] = React.useState<string>(settingSection || SettingsTab.general)
   const { getString } = useStrings()
   const { isRepositoryEmpty } = useGetResourceContent({
@@ -73,11 +74,16 @@ export default function RepositorySettings() {
       title: getString('security'),
       panel: <SecurityScanSettings repoMetadata={repoMetadata} activeTab={activeTab} />
     },
-    {
-      id: SettingsTab.labels,
-      title: getString('labels.labels'),
-      panel: <LabelsListing repoMetadata={repoMetadata} activeTab={activeTab} />
-    }
+    ...(isLabelEnabled || standalone
+      ? [
+          {
+            id: SettingsTab.labels,
+            title: getString('labels.labels'),
+            panel: <LabelsListing repoMetadata={repoMetadata} activeTab={activeTab} />
+          }
+        ]
+      : [])
+
     // {
     //   id: SettingsTab.webhooks,
     //   title: getString('webhooks'),

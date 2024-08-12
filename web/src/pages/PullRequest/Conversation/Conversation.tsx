@@ -51,7 +51,7 @@ import {
   filenameToLanguage,
   PRCommentFilterType
 } from 'utils/Utils'
-import { activitiesToDiffCommentItems, activityToCommentItem } from 'components/DiffViewer/DiffViewerUtils'
+import { CommentType, activitiesToDiffCommentItems, activityToCommentItem } from 'components/DiffViewer/DiffViewerUtils'
 import { NavigationCheck } from 'components/NavigationCheck/NavigationCheck'
 import { ThreadSection } from 'components/ThreadSection/ThreadSection'
 import { CodeCommentStatusSelect } from 'components/CodeCommentStatusSelect/CodeCommentStatusSelect'
@@ -69,6 +69,7 @@ import { CodeCommentHeader } from './CodeCommentHeader'
 import { SystemComment } from './SystemComment'
 import PullRequestOverviewPanel from './PullRequestOverviewPanel/PullRequestOverviewPanel'
 import css from './Conversation.module.scss'
+import { Render } from 'react-jsx-match'
 
 export interface ConversationProps extends Pick<GitInfoProps, 'repoMetadata' | 'pullReqMetadata'> {
   prStats?: TypesPullReqStats
@@ -94,7 +95,8 @@ export const Conversation: React.FC<ConversationProps> = ({
   pullReqCommits
 }) => {
   const { getString } = useStrings()
-  const { currentUser, routes } = useAppContext()
+  const { currentUser, routes, hooks } = useAppContext()
+  const { CODE_PULLREQ_LABELS: isLabelEnabled } = hooks?.useFeatureFlags()
   const location = useLocation()
   const activities = usePullReqActivities()
   const {
@@ -262,21 +264,24 @@ export const Conversation: React.FC<ConversationProps> = ({
     () =>
       activityBlocks?.map((commentItems, index) => {
         const threadId = commentItems[0].payload?.id
-
+        const renderLabelActivities =
+          commentItems[0].payload?.type !== CommentType.LABEL_MODIFY || isLabelEnabled || standalone
         if (isSystemComment(commentItems)) {
           return (
-            <ThreadSection
-              key={`thread-${threadId}`}
-              onlyTitle
-              lastItem={activityBlocks.length - 1 === index}
-              title={
-                <SystemComment
-                  key={`system-${threadId}`}
-                  pullReqMetadata={pullReqMetadata}
-                  commentItems={commentItems}
-                  repoMetadataPath={repoMetadata.path}
-                />
-              }></ThreadSection>
+            <Render when={renderLabelActivities}>
+              <ThreadSection
+                key={`thread-${threadId}`}
+                onlyTitle
+                lastItem={activityBlocks.length - 1 === index}
+                title={
+                  <SystemComment
+                    key={`system-${threadId}`}
+                    pullReqMetadata={pullReqMetadata}
+                    commentItems={commentItems}
+                    repoMetadataPath={repoMetadata.path}
+                  />
+                }></ThreadSection>
+            </Render>
           )
         }
 
