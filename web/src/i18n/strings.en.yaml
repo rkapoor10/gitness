@@ -1309,6 +1309,7 @@ labels:
   labelValueReq: Label Value is required
   noLabels: No Labels
   udpated: 'updated '
+  applied: 'applied '
   label: ' label'
   labelTo: ' label to '
   removed: 'removed '

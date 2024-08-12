@@ -618,6 +618,7 @@ export interface StringsMap {
   'labels.addNewValue': string
   'labels.addValue': string
   'labels.allowDynamic': string
+  'labels.applied': string
   'labels.appliedLabel': string
   'labels.canbeAddedByUsers': string
   'labels.createLabel': string

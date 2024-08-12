@@ -60,6 +60,7 @@ export const LabelFilter = (props: {
   const [labelValues, setLabelValues] = useState<SelectOption[]>()
   const [labelQuery, setLabelQuery] = useState<string>('')
   const [highlightItem, setHighlightItem] = useState('')
+  const [isVisible, setIsVisible] = useState(true)
   const { getString } = useStrings()
   const getLabelsPromise = async (): Promise<SelectOption[]> => {
     setLoadingLabels(true)
@@ -257,7 +258,9 @@ export const LabelFilter = (props: {
         const offsetValue = containsFilter(labelFilterOption, itemObj, 'forValue')
         const offsetLabel = containsFilter(labelFilterOption, itemObj, 'label')
         return (
-          <Container className={cx(css.labelCtn, { [css.highlight]: highlightItem === item.label })}>
+          <Container
+            onMouseEnter={() => (item.label !== highlightItem ? setIsVisible(false) : setIsVisible(true))}
+            className={cx(css.labelCtn, { [css.highlight]: highlightItem === item.label })}>
             {itemObj.value_count ? (
               <Button
                 className={css.labelBtn}
@@ -290,6 +293,7 @@ export const LabelFilter = (props: {
                 iconProps={{ size: 16 }}
                 variation={ButtonVariation.LINK}
                 onClick={() => {
+                  setIsVisible(true)
                   setHighlightItem(item.label as string)
                   getLabelValuesPromise(itemObj.key, itemObj.scope)
                     .then(res => setLabelValues(res))
@@ -381,7 +385,7 @@ export const LabelFilter = (props: {
                 tooltipProps={{
                   interactionKind: PopoverInteractionKind.CLICK,
                   position: PopoverPosition.RIGHT,
-                  popoverClassName: css.popover,
+                  popoverClassName: cx(css.popover, { [css.hide]: !isVisible }),
                   modifiers: { preventOverflow: { boundariesElement: 'viewport' } }
                 }}
               />

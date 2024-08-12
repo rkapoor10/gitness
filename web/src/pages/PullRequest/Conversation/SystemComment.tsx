@@ -305,7 +305,7 @@ export const SystemComment: React.FC<SystemCommentProps> = ({ pullReqMetadata, c
             <Text tag="div">
               <Match expr={(payload?.payload as Unknown).type}>
                 <Case val={LabelActivity.ASSIGN}>
-                  <strong>{payload?.author?.display_name}</strong> applied{' '}
+                  <strong>{payload?.author?.display_name}</strong> {getString('labels.applied')}
                   <Label
                     name={(payload?.payload as Unknown).label}
                     label_color={(payload?.payload as Unknown).label_color}
@@ -314,8 +314,8 @@ export const SystemComment: React.FC<SystemCommentProps> = ({ pullReqMetadata, c
                       color: (payload?.payload as Unknown).value_color
                     }}
                     scope={(payload?.payload as Unknown).scope}
-                  />{' '}
-                  label
+                  />
+                  <span>{getString('labels.label')}</span>
                 </Case>
                 <Case val={LabelActivity.RE_ASSIGN}>
                   <strong>{payload?.author?.display_name}</strong> <span>{getString('labels.udpated')}</span>
@@ -350,7 +350,7 @@ export const SystemComment: React.FC<SystemCommentProps> = ({ pullReqMetadata, c
                     }}
                     scope={(payload?.payload as Unknown).scope}
                   />
-                  <span>{getString('labels.labelTo')}</span>
+                  <span>{getString('labels.label')}</span>
                 </Case>
               </Match>
             </Text>
