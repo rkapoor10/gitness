@@ -45,6 +45,9 @@ export interface LabelSelectorProps {
   refetchlabelsList: () => void
   repoMetadata: RepoRepositoryOutput
   pullRequestMetadata: TypesPullReq
+  setQuery: any
+  query: string
+  labelListLoading: boolean
 }
 
 export interface LabelSelectProps extends Omit<ButtonProps, 'onSelect'> {
@@ -59,6 +62,7 @@ export interface LabelSelectProps extends Omit<ButtonProps, 'onSelect'> {
   setQuery: any
   menuItemIndex: number
   setMenuItemIndex: any
+  labelListLoading: boolean
 }
 
 enum LabelsMenuState {
@@ -72,13 +76,15 @@ export const LabelSelector: React.FC<LabelSelectorProps> = ({
   pullRequestMetadata,
   repoMetadata,
   refetchlabelsList,
+  query,
+  setQuery,
+  labelListLoading,
   ...props
 }) => {
   const [popoverDialogOpen, setPopoverDialogOpen] = useState<boolean>(false)
   const [menuState, setMenuState] = useState<LabelsMenuState>(LabelsMenuState.LABELS)
   const [menuItemIndex, setMenuItemIndex] = useState<number>(0)
   const [currentLabel, setCurrentLabel] = useState({ key: '', id: -1 })
-  const [query, setQuery] = useState('')
   const { getString } = useStrings()
 
   const { showError, showSuccess } = useToaster()
@@ -124,7 +130,8 @@ export const LabelSelector: React.FC<LabelSelectorProps> = ({
                 })
                   .then(() => {
                     refetchLabels()
-                    refetchlabelsList()
+                    setQuery('')
+                    // refetchlabelsList()
                     setPopoverDialogOpen(false)
                   })
                   .catch(error => showError(getErrorMessage(error)))
@@ -186,6 +193,7 @@ export const LabelSelector: React.FC<LabelSelectorProps> = ({
           }}
           menuItemIndex={menuItemIndex}
           setMenuItemIndex={setMenuItemIndex}
+          labelListLoading={labelListLoading}
         />
       }
       tooltipProps={{
@@ -214,16 +222,11 @@ const PopoverContent: React.FC<LabelSelectProps> = ({
   query,
   setQuery,
   menuItemIndex,
-  setMenuItemIndex
+  setMenuItemIndex,
+  labelListLoading
 }) => {
   const inputRef = useRef<HTMLInputElement | null>()
   // const colorObj = getColorsObj(currentLabel?.label_color ? currentLabel.label_color : ColorName.Blue)
-
-  const filterLabels = (labelQuery: string) => {
-    if (!labelQuery) return allLabelsData.label_data // If no query, return all names
-    const lowerCaseQuery = labelQuery.toLowerCase()
-    return allLabelsData.label_data.filter((label: any) => label.key.toLowerCase().includes(lowerCaseQuery))
-  }
 
   const filteredLabelValues = (valueQuery: string) => {
     if (!valueQuery) return currentLabel?.values // If no query, return all names
@@ -232,7 +235,7 @@ const PopoverContent: React.FC<LabelSelectProps> = ({
   }
 
   const labelsValueList = filteredLabelValues(query)
-  const labelsList = filterLabels(query)
+  const labelsList = allLabelsData.label_data
 
   useEffect(() => {
     if (menuState === LabelsMenuState.LABELS && menuItemIndex > 0)
@@ -305,7 +308,6 @@ const PopoverContent: React.FC<LabelSelectProps> = ({
             wrapperClassName={css.inputBox}
             value={query}
             inputRef={ref => (inputRef.current = ref)}
-            defaultValue={query}
             autoFocus
             placeholder={'Find a label'}
             onInput={e => {
@@ -364,6 +366,7 @@ const PopoverContent: React.FC<LabelSelectProps> = ({
             menuItemIndex={menuItemIndex}
             addNewValue={addNewValue}
             setMenuItemIndex={setMenuItemIndex}
+            labelListLoading={labelListLoading}
           />
         </Container>
       </Layout.Vertical>
@@ -387,7 +390,8 @@ const LabelList = ({
   currentLabel,
   allLabelsData: labelsList,
   menuItemIndex,
-  addNewValue
+  addNewValue,
+  labelListLoading
 }: LabelListProps) => {
   const { getString } = useStrings()
   if (menuState === LabelsMenuState.LABELS) {
@@ -425,13 +429,13 @@ const LabelList = ({
     } else {
       return (
         <Container flex={{ align: 'center-center' }} padding="large">
-          {
+          {!labelListLoading && (
             <Text className={css.noWrapText} flex padding={{ top: 'small' }}>
               <span>
                 {query && <Tag> {query} </Tag>} {getString('labels.labelNotFound')}
               </span>
             </Text>
-          }
+          )}
         </Container>
       )
     }

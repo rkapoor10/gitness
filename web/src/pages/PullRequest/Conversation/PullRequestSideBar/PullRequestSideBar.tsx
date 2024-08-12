@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react'
+import React, { useState } from 'react'
 import { PopoverInteractionKind } from '@blueprintjs/core'
 import { useGet, useMutate } from 'restful-react'
 import { omit } from 'lodash-es'
@@ -47,6 +47,7 @@ interface PullRequestSideBarProps {
 const PullRequestSideBar = (props: PullRequestSideBarProps) => {
   const { standalone, hooks } = useAppContext()
   const { CODE_PULLREQ_LABELS: isLabelEnabled } = hooks?.useFeatureFlags()
+  const [labelQuery, setLabelQuery] = useState<string>('')
   const { reviewers, repoMetadata, pullRequestMetadata, refetchReviewers, labels, refetchLabels } = props
   const { getString } = useStrings()
   const { showError, showSuccess } = useToaster()
@@ -172,9 +173,13 @@ const PullRequestSideBar = (props: PullRequestSideBarProps) => {
       )}`
   })
 
-  const { data: labelsList, refetch: refetchlabelsList } = useGet<TypesScopesLabels>({
+  const {
+    data: labelsList,
+    refetch: refetchlabelsList,
+    loading: labelListLoading
+  } = useGet<TypesScopesLabels>({
     path: `/api/v1/repos/${repoMetadata.path}/+/pullreq/${pullRequestMetadata?.number}/labels`,
-    queryParams: { assignable: true },
+    queryParams: { assignable: true, query: labelQuery },
     debounce: 500
   })
 
@@ -409,6 +414,9 @@ const PullRequestSideBar = (props: PullRequestSideBarProps) => {
                 refetchLabels={refetchLabels}
                 refetchlabelsList={refetchlabelsList}
                 repoMetadata={repoMetadata}
+                query={labelQuery}
+                setQuery={setLabelQuery}
+                labelListLoading={labelListLoading}
               />
             </Layout.Horizontal>
             <Container padding={{ top: 'medium', bottom: 'large' }}>

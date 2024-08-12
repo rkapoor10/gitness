@@ -105,7 +105,8 @@ export const Label: React.FC<LabelProps> = props => {
               style={{
                 color: `${colorObj.text}`
               }}
-              font={{ variation: FontVariation.SMALL_SEMI }}>
+              font={{ variation: FontVariation.SMALL_SEMI }}
+              lineClamp={1}>
               {name}
             </Text>
           </Container>
@@ -120,6 +121,7 @@ export const Label: React.FC<LabelProps> = props => {
                 color: `${colorObj.text}`,
                 backgroundColor: `${colorObj.backgroundWithoutStroke}`
               }}
+              lineClamp={1}
               font={{ variation: FontVariation.SMALL_SEMI }}>
               {label_value.name}
             </Text>
@@ -174,6 +176,7 @@ export const Label: React.FC<LabelProps> = props => {
             style={{
               color: `${colorObj.text}`
             }}
+            lineClamp={1}
             font={{ variation: FontVariation.SMALL_SEMI }}>
             {name}
           </Text>
@@ -235,6 +238,7 @@ export const LabelTitle: React.FC<LabelValuesListProps> = props => {
               style={{
                 color: `${colorObj.text}`
               }}
+              lineClamp={1}
               font={{ variation: FontVariation.SMALL_SEMI }}>
               {name}
             </Text>
@@ -260,6 +264,7 @@ export const LabelTitle: React.FC<LabelValuesListProps> = props => {
             border: `1px solid ${colorObj.stroke}`
           }}
           className={css.standaloneKey}
+          lineClamp={1}
           font={{ variation: FontVariation.SMALL_SEMI }}>
           {name}
         </Text>
