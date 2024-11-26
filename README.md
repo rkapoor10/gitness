@@ -1,14 +1,11 @@
 # Gitness
 Gitness is an open source development platform packed with the power of code hosting and automated DevOps pipelines.
 
-## Overview
-Gitness is an open source development platform packed with the power of code hosting and automated continuous integration pipelines.
-
 ## Running Gitness locally
 > The latest publicly released docker image can be found on [harness/gitness](https://hub.docker.com/r/harness/gitness).
 
 To install Gitness yourself, simply run the command below. Once the container is up, you can visit http://localhost:3000 in your browser.
-
+dfds
 ```bash
 docker run -d \
   -p 3000:3000 \
